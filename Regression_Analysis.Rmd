@@ -112,7 +112,7 @@ I then ran a forward step model (called fwd_model) on the variables duration, gr
 
 ##Evaluating the models
 
-I ran the predict functions on both models over the training set with an initial threshold of .5 and then ran ROC curves for both using the pROC package.  The optimal thresholds were shown to be 0.045 and 0.055 with Areas Under the Curve (AUC) of 0.947 and 0.971, respectively.  I then re-ran the predictions using these new optimal thresholds and obtained the following confusion matrices.  
+I ran the predict functions on both models over the training set with an initial threshold of .5 and then ran ROC curves for both using the pROC package.  The optimal thresholds were shown to be 0.045 and 0.055 with Areas Under the Curve (AUC) of 0.947 and 0.971, respectively.  I then re-ran the predictions using these new optimal thresholds and obtained the following confusion matrices.  (The coefficients and probabilities for each of the variables can be viewed in Appendix A here [^1].)
 
 ```{r echo=FALSE}
 
@@ -130,7 +130,7 @@ table(pred2_train, movies_train$nominations)
 ```
 There was a lower overall accuracy for the first model (91.7% vs. 94.9%), with higher False Negative and higher False Positive rates in the first model.  Movies.mod7 had a Sensitivity of 83.6%, a Specificity of 91.8%, a False Negative rate of 16.4% and a False Positive rate of 8.2%, while fwd_model had a Sensitivity of 93.2%, a Specificity of 95.0%, a False Negative rate of 6.8% and a False Positive rate of 5.0%.  
 
-Initially, it appeared that fwd_model was completely superior, but this changed once applying the predctions to the test set.  The confusion matrices for the test set were as follows (using the new optimal thresholds of 0.034 and 0.046, respectively):  
+I then ran the predict functions on both models over the test set with an initial threshold of .5 and then ran ROC curves for both using the pROC package. The optimal thresholds were shown to be 0.034 and 0.046 with Areas Under the Curve (AUC) of 0.867 and 0.853, respectively, thus showing a lower AUC under the test set for fwd_model. (All ROC curves may be viewed in Appendix B [^2].) I then re-ran the predictions using these new optimal thresholds. Initially, it appeared that fwd_model was superior in most respects, but this changed once applying the predctions to the test set. The confusion matrices for the test set were as follows (using the new optimal thresholds of 0.034 and 0.046, respectively):  
 
 ```{r echo=FALSE}
 
@@ -177,4 +177,47 @@ predResult[, c(1:3, 5)]
 
 ```
 
-As can be seen, neither movie was predicted to win a Best Picture Oscar, but Seven Years in Tibet had a much higher likelihood of winning  (approximately 4% vs. less than 1 millionth of 1%, with very small standard errors), despite both movies having imdb ratings of 7. (It should also be noted that the results obtainable from fwd_model ultimately proved to be of the same order, so either model would have given accurate results here.) Seven Years in Tibet did not win an Oscar, but was nominated for many other awards, including a Golden Globe, as revealed by the imdb profile for the film available on [imdb.com](https://www.imdb.com).  Hellraiser was nominated for a Saturn, but nothing as prestigious as a Golden Globe. Thus, imdb rating is not the only determining factor in predicting whether a film will win a Best Picture Oscar.  Indeed, this model correctly predicted that neither of these films would win an Oscar and was also able to make (or at least confirm) a "subjective" assessment as to the quality of both films, if such quality can be measured by the relative probability of winning a Best Picture Oscar and by the other awards won by each film.       
+As can be seen, neither movie was predicted to win a Best Picture Oscar, but Seven Years in Tibet had a much higher likelihood of winning  (approximately 4% vs. less than 1 millionth of 1%, with very small standard errors), despite both movies having imdb ratings of 7. (It should also be noted that the results obtainable from fwd_model ultimately proved to be of the same order, so either model would have given accurate results here.) Seven Years in Tibet did not win an Oscar, but was nominated for many other awards, including a Golden Globe, as revealed by the imdb profile for the film available on [imdb.com](https://www.imdb.com).  Hellraiser was nominated for a Saturn, but nothing as prestigious as a Golden Globe. Thus, imdb rating is not the only determining factor in predicting whether a film will win a Best Picture Oscar.  Indeed, this model correctly predicted that neither of these films would win an Oscar and was also able to make (or at least confirm) a "subjective" assessment as to the quality of both films, if such quality can be measured by the relative probability of winning a Best Picture Oscar and by the other awards won by each film. 
+
+#Appendix A
+
+[^1]:The first set of coefficents and probabilities corresponds to movies.mod7, while the second set corresponds to fwd_model.  
+
+```{r echo=FALSE}
+movies.mod.tab7 <- coef(summary(movies.mod7))
+movies.mod.tab7[, "Estimate"] <- exp(coef(movies.mod7))
+
+movies.mod.tab7
+
+movies.mod.tab8 <- coef(summary(fwd.model))
+movies.mod.tab8[, "Estimate"] <- exp(coef(fwd.model))
+
+movies.mod.tab8
+
+```
+
+#Appendix B
+
+[^2]:  The first two ROC curves correspond to the curves for movies.mod7 and fwd_model, respectively, on the training set, while the second two curves correspond to the curves for movies.mod7 and fwd_model, respectively, on the test set.
+
+```{r echo=FALSE, fig.align="center"}
+
+movies_train$prob1 <- probs_train1
+train_ROC1 <- roc(nominations ~ prob1, data = movies_train)
+plot.roc(train_ROC1, legacy.axes = TRUE, print.thres = TRUE, print.auc = TRUE)
+
+movies_train$prob2 <- probs_train2
+train_ROC2 <- roc(nominations ~ prob2, data = movies_train)
+plot.roc(train_ROC2, legacy.axes = TRUE, print.thres = TRUE, print.auc = TRUE)
+```
+
+```{r echo=FALSE, fig.align="center"} 
+movies_test$prob1 <- probs1
+ROC1 <- roc(nominations ~ prob1, data = movies_test)
+plot.roc(ROC1, legacy.axes = TRUE, print.thres = TRUE, print.auc = TRUE)
+
+movies_test$prob2 <- probs2
+ROC2 <- roc(nominations ~ prob2, data = movies_test)
+plot.roc(ROC2, legacy.axes = TRUE, print.thres = TRUE, print.auc = TRUE)
+
+```
