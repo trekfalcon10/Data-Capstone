@@ -453,14 +453,6 @@ write.csv(train_movies, "train_movies.csv")
 
 write.csv(test_movies, "test_movies.csv")
 
-
-
-#---------------------------------------------
-
-#Replace only specific NA's in a given column--does not work! 
-#Forced to subset prematurely, by using movie_years_noms as the training set
-movies[movies$year < 2015 & movies$year > 1926, 3] <- movie_years_noms$nominations
-
 #______________________________________________
 
 #Analyze train set
