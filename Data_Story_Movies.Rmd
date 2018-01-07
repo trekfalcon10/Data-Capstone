@@ -23,6 +23,8 @@ new_movies <- read.csv("test_movies.csv", stringsAsFactors = FALSE)
 ```
 Each year, Hollywood releases vast numbers of movies to diverse audiences all over the world. Of these scores of films, only a scant few are chosen to win an Academy Award, and fewer still win the Award for Best Picture.  How might it be possible to predict in advance whether a film will win an Academy Award?  Is it possible to assess the quality of a movie based on its relative probability of winning an Academy Award?   
 
+Please note that all code used to generate the graphs and output displayed herein is available for review in Appendix B under the appropriate headers.  
+
 #Initial Preparations
 In order to answer these questions, I began by obtaining two datasets containing both general movie data and data indicating whether films were nominated for academy awards. All of these films had at least won an Academy Award for Best Pciture. The general movie dataset contains imdb data obtained from Kaggle at <https://www.kaggle.com/antoniobap/imdb-v3/data>.  The academy award data was obtained from the University of Waterloo at <https://cs.uwaterloo.ca/~s255khan/oscars.html>. 
 
@@ -33,7 +35,7 @@ Before loading the datasets, I loaded the dplyr, tidyr and dummies libraries.
 
 Intending to merge these two datasets into one, I began by changing the names of the columns in the imdb dataset (hereinafter, imdb) to match those in the academy awards dataset (hereinafter, acad_awd). I renamed movie_title, title_year and imdb_score to be name, year and rating, respectively.  
 
-I then trimmed all leading and trailing whitespace from the names in both datasets and removed trailing question marks from the names in the imdb set. I also changed the names in both datasets to uppercase for consistency.  I changed one title in imdb, Birdman, which used the film's extended title to match the shorter title used in acad_awd.  There were two dashes in the nominations column in the acad_awd set that I changed to 1's, signifying that those films had at least won an Oscar for Best Picture.  
+I then trimmed all leading and trailing whitespace from the names in both datasets and removed trailing question marks from the names in the imdb set. I also changed the names in both datasets to uppercase for consistency.  I changed one title in imdb, Birdman, which used the film's extended title to match the shorter title used in acad_awd.  There were two dashes in the nominations column[^1] in the acad_awd set that I changed to 1's, signifying that those films had at least won an Oscar for Best Picture.  
 
 The na's in certain key columns in imdb, budget, gross and duration, had values imputed to them based on the means of their respective columns as a whole. (The mean for duration was rounded to ensure an integer value.)
 
@@ -65,14 +67,17 @@ table(won_movies$language, won_movies$country)
 
 ```
 
-Both the older and newer films were primarily English, even where they were made in other countries.  In the case of the Oscar-winning films, as illustrated above, all of the movies were in English[^1].   
+Both the older and newer films were primarily English, even where they were made in other countries.  In the case of the Oscar-winning films, as illustrated above, all of the movies were in English, typically in either the US or the UK[^2].   
 
 ##Duration and Ratings
 I then ran the mean, median, range, variance (var) and standard deviation (sd) for the durations and ratings of the older, newer and Oscar-winning films.  Ratings as used here refer to IMDB ratings given on a scale from 1 (being the worst) to 10 (being the best). 
 
-The results for duration indicated that the average length of Oscar-winning movies was longer than the length of other movies in general (approximately 140 minutes for Oscar-nominated movies compared to 108 and 107 minutes for older and newer movies, respectively.)  There was also a greater variance in won_movies (approximately 1303), but a lower maximum at 240 minutes compared to 330 minutes in the older movies. However, this 330 minute length in the older movies set appears to be an outlier, since the film occupying the 99th percentile in duration had a length of a more modest 188 minutes.  The newer movies had the least variance (at approximately 318) and the lowest average length.    
+The results for duration indicated that the average length of Oscar-winning movies was longer than the length of other movies in general (approximately 140 minutes for Oscar-winning movies compared to 108 and 107 minutes for older and newer movies, respectively.)  There was also a greater variance in won_movies (approximately 1303), but a lower maximum at 240 minutes compared to 330 minutes in the older movies. However, this 330 minute length in the older movies set appears to be an outlier, since the film occupying the 99th percentile in duration had a length of a more modest 188 minutes.  The newer movies had the least variance (at approximately 318) and the lowest average length.    
 
 Predictably, the results for rating indicated that the Oscar-winning movies were rated higher than the general population or the newer movies, the average and median ratings being approximately 7.8 and 8 respectively compared to 6.4 and 6.6 for the older movies and 6.1 and 6.3 for the newer movies.  The Oscar-winning movies also had lower variances than the other sets. (0.43 compared to 1.22 and 1.58 for the older movies and the newer movies.) The maxima for all sets was at or near 9.2, but the minima varied.  The older movies and the newer movies had lows of 1.6 and 2.2 respectively, while won_movies had a much greater minimum of 5.8.  The smaller variance in won_movies is therefore likely due to those films having been rated consistently high.  (The averages for the general population of older movies and newer movies, both here and for duration were substantially the same, with the slightly greater ratings and durations for the older movies set likely because this set also contains the Oscar-winning movies.)  
+
+Thus it appears that Oscar-winning films typically have average durations of two to two and a half hours in length with high imdb ratings close to 8 out of 10. 
+
 
 ##Budget and Gross
 
@@ -96,6 +101,8 @@ grid.arrange(plot1, plot2, plot3, ncol=2)
 
 
 ```
+
+Therefore, it appears that Oscar-winning films typically have budgets not much greater than \$100 million and gross not much more than \$200 million.  
 
 ##Genres
 
@@ -155,13 +162,15 @@ It should be noted here that the compiler of these datasets did not always inclu
 
 #Concluding Remarks
 
-Based on my examination of the characteristics of the films in the movie datasets, it appears that a number of factors characterise successful potentially Oscar-winning movies.  Drama films made in English in either the US or UK that are moderately long (approximately two to two and a half hours in length), with high imdb ratings (greater than 7/10) and relatively large budgets (but not much greater than \$100 million) appear to be films that are most likely to win Academy Awards for Best Picture.  
+Based on my examination of the characteristics of the films in the movie datasets, it appears that a number of factors characterise successful potentially Oscar-winning movies.  Drama films made in English in either the US or UK that are moderately long (approximately two to two and a half hours in length), with high imdb ratings (nearly 8 out of 10) and relatively large budgets (but not much greater than \$100 million) appear to be films that are most likely to win Academy Awards for Best Picture.  
 
 While the caliber of directors and actors involved in a film's production may be persuasive evidence that a movie will turn out to be successful, it is not determinative.  For example, while Steven Spielberg was involved in the production of an Oscar-winning film, he was also involved in many that were not. Likewise, Morgan Freeman (the most frequently appearing actor among the Oscar-winning films) acted not only in Oscar-winning films such as "Unforgiven", but also in less successful films such as "Evan Almighty" and "Ted 2".  
 
 Accordingly, I would use variables such as duration, language, country, rating, budget, gross and the genre variables as predictor variables when attempting to make predictions as to whether a film is likely to win an Academy Award for Best Picture, rather than looking to the director and/or actors involved in the film's production.  Such variables are likely to also prove useful in assessing the overall quality of a film, assuming that the subjective nature of "quality" may be quantitatively defined as, for example, the number of other awards that a film won or the number of other awards for which they were nominated.  These ideas will be further put to the test in my Regression Analysis report.   
 
-[^1]: The more extensive tables for the older and newer movies are available in Appendix A, where the first table corresponds to the older films, inclusive of the films from won_movies, and the second set contains the newer films.
+[^1]: The original variable name "nominations" refers to the total number of nominations received by films that won a Best Picture Academy Award.  All films listed in the acad_awd dataset were winners of a Best Picture Oscar.
+
+[^2]: The more extensive tables for the older and newer movies are available in Appendix A, where the first table corresponds to the older films, inclusive of the films from won_movies, and the second set contains the newer films.
 
 #Appendix A
 
@@ -172,3 +181,83 @@ table(train_movies$language, train_movies$country)
 table(new_movies$language, new_movies$country)
 
 ```
+
+
+# Appendix B
+
+## I.  Initial Preparations
+
+The following code is needed as a basis to run the code used to generate the graphs and output displayed in this report.  
+
+library(dplyr)  
+library(ggplot2)  
+library(gridExtra)  
+
+options(scipen = 5)  
+
+train_movies <- read.csv("train_movies.csv", stringsAsFactors = FALSE)  
+
+\#Remove invalid country name  
+train_movies\$country[train_movies\$country == "Official site"] <- "Unknown"  
+
+won_movies <- subset(train_movies, train_movies$nominations != 0)  
+
+new_movies <- read.csv("test_movies.csv", stringsAsFactors = FALSE)  
+
+## II.  Language and Country
+
+table(won_movies\$language, won_movies\$country)  
+
+## III.  Budget and Gross  
+
+plot1 <- ggplot(train_movies, aes((budget/10^6), (gross/10^6))) + geom_point() +
+  labs(title="Movies from 1927-2014", x="Budget in Millions of Dollars", 
+       y="Gross in Millions of Dollars")   
+plot2 <- ggplot(won_movies, aes((budget/10^6), (gross/10^6))) + geom_point() + 
+  labs(title="Oscar-Winning Movies", x="Budget in Millions of Dollars", 
+       y="Gross in Millions of Dollars")  
+plot3 <- ggplot(new_movies, aes((budget/10^6), (gross/10^6))) + geom_point() + 
+  labs(title="Movies from 2015-2016", x="Budget in Millions of Dollars", 
+       y="Gross in Millions of Dollars")  
+
+grid.arrange(plot1, plot2, plot3, ncol=2)  
+
+## IV.  Genres  
+
+genres1 <- train_movies[ , c("Action", "Adventure", "Biography", "Comedy", "Crime", "Drama", "Musical", "Western", 
+                             "Family", "Film.Noir", "History", "Mystery", "Romance", "Sport", "War", "Fantasy", "Sci.Fi",
+                             "Thriller", "Documentary", "Horror", "Animation")]  
+genres2 <- won_movies[ , c("Action", "Adventure", "Biography", "Comedy", "Crime", "Drama", "Musical", "Western", 
+                             "Family", "Film.Noir", "History", "Mystery", "Romance", "Sport", "War", "Fantasy", "Sci.Fi",
+                             "Thriller", "Documentary", "Horror", "Animation")]  
+genres_new <- new_movies[ , c("Action", "Adventure", "Biography", "Comedy", "Crime", "Drama", "Musical", "Western", 
+                             "Family", "Film.Noir", "History", "Mystery", "Romance", "Sport", "War", "Fantasy", "Sci.Fi",
+                             "Thriller", "Documentary", "Horror", "Animation")] 
+
+genre_plot1 <- as.data.frame(colSums(genres1))  
+percent1 <- (genre_plot1\$\`colSums(genres1)\` / nrow(train_movies)) * 100   
+plt1 <- ggplot(genre_plot1, aes(x=rownames(genre_plot1), y=percent1)) + 
+  geom_bar(stat = "identity", position = "dodge") + labs(x = "Genres", y = "Percent", title = "Movie Genres 1927-2014") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+genre_plot2 <- as.data.frame(colSums(genres2))  
+percent2 <- (genre_plot2\$\`colSums(genres2)\` / nrow(won_movies)) * 100  
+plt2 <- ggplot(genre_plot2, aes(x=rownames(genre_plot2), y=percent2)) + 
+  geom_bar(stat = "identity", position = "dodge") + labs(x = "Genres", y = "Percent", title = "Oscar-Winning Movie Genres") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+genre_plot_new <- as.data.frame(colSums(genres_new)) 
+percent_new <- (genre_plot_new\$\`colSums(genres_new)\` / nrow(new_movies)) * 100  
+
+plt3 <- ggplot(genre_plot_new, aes(x=rownames(genre_plot_new), y=percent_new)) +
+  geom_bar(stat = "identity", position = "dodge") + labs(x = "Genres", y = "Percent", title = "New Movie Genres") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))  
+
+grid.arrange(plt1, plt2, plt3, ncol=2)  
+
+## V.  Appendix A  
+
+table(train_movies\$language, train_movies\$country)  
+
+table(new_movies\$language, new_movies\$country)  
+
